@@ -1,0 +1,78 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<ul id="expenses" class="w-1/2 text-sm font-medium text-gray-900 bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+    {% for item in items['items'] %}
+        <li id="expense" class="grid grid-cols-4 relative justify-items-between w-full px-4 py-4 cursor-pointer dark:hover:bg-gray-600 dark:hover:text-white hover:bg-gray-100 hover:text-blue-700 border-b border-gray-200 dark:border-gray-600">
+            <div class="grid grid-cols-2 col-start-1 justify-self-start">
+                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M12 6h.01M12 12h.01M12 18h.01"/>
+                </svg>
+                <span id="exp-name" class="w-48 justify-start">{{ item }}</span>
+            </div>
+            <div class="grid grid-cols-2 col-end-5 justify-items-end">
+                <span id="exp-amount" data-amount="{{ '%0.2f' % items['amount'][loop.index - 1]|float }}">$ {{ '%0.2f' % items['amount'][loop.index - 1]|float }}</span>
+                <span id="exp-cumsum">0</span>
+                <button type="button" class="h-full absolute bottom-0 right-0 text-white bg-[#3b5998] hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-[#3b5998]/50 font-medium text-sm text-center inline-flex items-center dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600">
+                    <svg class="w-[36px] h-[36px] text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m15 19-7-7 7-7"/>
+                    </svg>
+                </button>
+            </div>
+
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        calcCumSum()
+    })
+
+    function calcCumSum(){
+        var prevAmt = 0.00
+        $('#expenses li').each(function (){
+            var amount = parseFloat($('#exp-amount', this).data('amount'));
+            prevAmt += amount
+            $('#exp-cumsum', this).text("$ " + prevAmt.toFixed(2))
+
+            if(prevAmt < 0) {
+                $('#exp-cumsum', this).removeClass()
+                $('#exp-cumsum', this).addClass("absolute bottom-0 right-10 bg-red-100 text-red-800 text-xs font-light px-3 py-0.5 rounded dark:bg-red-900 dark:text-red-300")
+            }
+            else {
+                $('#exp-cumsum', this).removeClass()
+                $('#exp-cumsum', this).addClass("absolute bottom-0 right-10 bg-green-100 text-green-800 text-xs font-light px-3 py-0.5 rounded dark:bg-green-900 dark:text-green-300")
+            }
+        })
+    }
+
+    $( function() {
+        $( "#expenses" ).sortable({
+            stop: function (event, ui) {
+                var expenses = new Array()
+                var prevAmt = 0
+
+                $('#expenses li #exp-name').each(function (i) {
+                    var text = $(this).text();
+                    expenses.push(text);
+                });
+
+                calcCumSum()
+
+                console.log(expenses)
+                $.ajax({
+                    type: 'POST',
+                    url: '/receive_expense_list',
+                    data: {
+                        expenses : expenses,
+                    },
+
+                });
+            }
+        });
+    } );
+</script>
+{% endblock %}
