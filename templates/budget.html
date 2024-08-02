@@ -3,30 +3,151 @@
 {% block content %}
 <ul id="expenses" class="w-1/2 text-sm font-medium text-gray-900 bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
     {% for item in items['items'] %}
-        <li id="expense" class="grid grid-cols-4 relative justify-items-between w-full px-4 py-4 cursor-pointer dark:hover:bg-gray-600 dark:hover:text-white hover:bg-gray-100 hover:text-blue-700 border-b border-gray-200 dark:border-gray-600">
-            <div class="grid grid-cols-2 col-start-1 justify-self-start">
-                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M12 6h.01M12 12h.01M12 18h.01"/>
-                </svg>
-                <span id="exp-name" class="w-48 justify-start">{{ item }}</span>
-            </div>
-            <div class="grid grid-cols-2 col-end-5 justify-items-end">
-                <span id="exp-amount" data-amount="{{ '%0.2f' % items['amount'][loop.index - 1]|float }}">$ {{ '%0.2f' % items['amount'][loop.index - 1]|float }}</span>
-                <span id="exp-cumsum">0</span>
-                <button type="button" class="h-full absolute bottom-0 right-0 text-white bg-[#3b5998] hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-[#3b5998]/50 font-medium text-sm text-center inline-flex items-center dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600">
-                    <svg class="w-[36px] h-[36px] text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m15 19-7-7 7-7"/>
+        <li id="expense" data-accordion="collapse" class="w-full ">
+            <div class="grid grid-cols-4 relative justify-items-between w-full px-4 py-4 cursor-pointer dark:hover:bg-gray-600 dark:hover:text-white hover:bg-gray-100 hover:text-blue-700 border-b border-gray-200 dark:border-gray-600">
+                <div class="grid grid-cols-2 col-start-1 justify-self-start">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M12 6h.01M12 12h.01M12 18h.01"/>
                     </svg>
+                    <span id="exp-name" class="w-48 justify-start">{{ item }}</span>
+                </div>
+                <div class="grid grid-cols-2 col-end-5 justify-items-end">
+                    {% if items['amount'][loop.index - 1] < 0 %}
+                        <span id="exp-amount" data-amount="{{ '%0.2f' % items['amount'][loop.index - 1]|float }}">-$ {{ '%0.2f' % (items['amount'][loop.index - 1]*-1)|float }}</span>
+                    {% else %}
+                        <span id="exp-amount" data-amount="{{ '%0.2f' % items['amount'][loop.index - 1]|float }}">$ {{ '%0.2f' % items['amount'][loop.index - 1]|float }}</span>
+                    {% endif %}
+                    <span id="exp-cumsum">0</span>
+                    <button type="button" class="h-full absolute bottom-0 right-0 bg-white hover:bg-gray-100 hover:text-blue-700 focus:ring-1 focus:outline-none focus:ring-[#3b5998]/50 font-medium text-sm text-center inline-flex items-center dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600" data-accordion-target="#item-edit-body-{{ (loop.index - 1) }}" aria-expanded="false" aria-controls="item-edit-body-{{ (loop.index - 1) }}">
+                        <svg class="w-[36px] h-[36px] text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m15 19-7-7 7-7"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div id="item-edit-body-{{ (loop.index - 1) }}" class="hidden">
+                <div class="grid grid-cols-2 justify-between p-4 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
+                    <div class="relative z-0 w-full mb-4 px-1 group">
+                        <input type="text" name="item-name" id="item-name" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+                        <label for="item-name" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Item Name</label>
+                    </div>
+                    <div class="relative z-0 w-full mb-4 px-1 group">
+                        <input type="number" name="item-amount" id="item-amount" class="block py-2.5 px-2 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+                        <label for="item-amount" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Amount</label>
+                    </div>
+                </div>
+            </div>
+        </li>
+
+    {% endfor %}
+        <li id="accordion-collapse" data-accordion="collapse" class="w-full">
+            <button type="button" id="add-item" class="justify-center py-2 h-full w-full bg-white hover:bg-gray-100 hover:text-blue-700 focus:ring-1 focus:outline-none font-medium text-sm text-center inline-flex items-center dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white" data-accordion-target="#accordion-collapse-body-1" aria-expanded="false" aria-controls="accordion-collapse-body-1">
+                <svg class="w-[30px] h-[30px] text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5"/>
+                </svg>
+                Add Item
+            </button>
+        </li>
+        <li id="accordion-collapse-body-1" class="hidden">
+            <div class="grid grid-cols-2 justify-between p-4 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
+                <div class="relative z-0 w-full mb-4 px-1 group">
+                    <input type="text" name="item-name" id="item-name" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+                    <label for="item-name" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Item Name</label>
+                </div>
+                <div class="relative z-0 w-full mb-4 px-1 group">
+                    <input type="number" name="item-amount" id="item-amount" class="block py-2.5 px-2 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+                    <label for="item-amount" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Amount</label>
+                </div>
+                <div class="relative z-0 w-full mb-4 px-1 group">
+                    <input  datepicker datepicker-autohide type="text" name="item-name" id="item-name" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+                    <div class="absolute inset-y-0 end-3 flex items-center ps-3 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+                        </svg>
+                    </div>
+                    <label for="item-name" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Date</label>
+                </div>
+                <div class="relative z-0 w-full mb-4 m-1 group">
+
+                </div>
+                <button type="button" id="add-income" class="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">
+                    Add Income
+                </button>
+                <button type="button" id="add-expense" class="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">
+                    Add Expense
                 </button>
             </div>
 
         </li>
-    {% endfor %}
 </ul>
 {% endblock %}
 
 {% block scripts %}
 <script>
+    $('#add-expense').on('click', function() {
+        var item_names = new Array()
+        var item_amounts = new Array()
+
+        $('#expenses li #exp-name').each(function (i) {
+            var text = $(this).text();
+            item_names.push(text);
+        });
+
+        $('#expenses li #exp-amount').each(function (i) {
+            var amount = $(this).data('amount')
+            item_amounts.push(amount);
+        })
+
+        item_names.push($("#item-name").val())
+        item_amounts.push('-' + ($("#item-amount").val()))
+
+        $.ajax({
+            type: 'POST',
+            url: '/add_item',
+            data: {
+                item_names : item_names,
+                item_amounts : item_amounts
+            },
+            success:
+                location.reload()
+        });
+    });
+
+
+    $(document).ready(function() {
+        calcCumSum()
+    })
+
+        $('#add-income').on('click', function() {
+        var item_names = new Array()
+        var item_amounts = new Array()
+
+        $('#expenses li #exp-name').each(function (i) {
+            var text = $(this).text();
+            item_names.push(text);
+        });
+
+        $('#expenses li #exp-amount').each(function (i) {
+            var amount = $(this).data('amount')
+            item_amounts.push(amount);
+        })
+
+        item_names.push($("#item-name").val())
+        item_amounts.push(($("#item-amount").val()))
+
+        $.ajax({
+            type: 'POST',
+            url: '/add_item',
+            data: {
+                item_names : item_names,
+                item_amounts : item_amounts
+            },
+            success:
+                location.reload()
+        });
+    });
+
+
     $(document).ready(function() {
         calcCumSum()
     })
@@ -36,15 +157,16 @@
         $('#expenses li').each(function (){
             var amount = parseFloat($('#exp-amount', this).data('amount'));
             prevAmt += amount
-            $('#exp-cumsum', this).text("$ " + prevAmt.toFixed(2))
 
             if(prevAmt < 0) {
                 $('#exp-cumsum', this).removeClass()
                 $('#exp-cumsum', this).addClass("absolute bottom-0 right-10 bg-red-100 text-red-800 text-xs font-light px-3 py-0.5 rounded dark:bg-red-900 dark:text-red-300")
+                $('#exp-cumsum', this).text("-$ " + (prevAmt.toFixed(2)*-1))
             }
             else {
                 $('#exp-cumsum', this).removeClass()
                 $('#exp-cumsum', this).addClass("absolute bottom-0 right-10 bg-green-100 text-green-800 text-xs font-light px-3 py-0.5 rounded dark:bg-green-900 dark:text-green-300")
+                $('#exp-cumsum', this).text("$ " + prevAmt.toFixed(2))
             }
         })
     }
@@ -52,13 +174,18 @@
     $( function() {
         $( "#expenses" ).sortable({
             stop: function (event, ui) {
-                var expenses = new Array()
-                var prevAmt = 0
+                var item_names = new Array()
+                var item_amounts = new Array()
 
                 $('#expenses li #exp-name').each(function (i) {
                     var text = $(this).text();
-                    expenses.push(text);
+                    item_names.push(text);
                 });
+
+                $('#expenses li #exp-amount').each(function (i) {
+                    var amount = $(this).data('amount')
+                    item_amounts.push(amount);
+                })
 
                 calcCumSum()
 
@@ -67,7 +194,8 @@
                     type: 'POST',
                     url: '/receive_expense_list',
                     data: {
-                        expenses : expenses,
+                        item_names : item_names,
+                        item_amounts : item_amounts
                     },
 
                 });
