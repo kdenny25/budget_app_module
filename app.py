@@ -1,45 +1,114 @@
-from flask import Flask, request, render_template, url_for, redirect, flash, session
+from flask import Flask, request, render_template, redirect, session, jsonify
 import json
 from database import Database
+from utilities.lists import recurring, categories, category_label
 
 db = Database()
 
 app = Flask(__name__)
 
-# lists_of_items = {
-#     "items": ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5', 'Item 6', 'Item 7'],
-#     "dates": [],
-#     "amount": [200.00, 10.30, -50.18, -25.00, 600.00, -150.00, 200.00]
-# }
+current_user = 5
 
 @app.route('/')
 def index():  # put application's code here
-    budget = db.get_budget(5)
+    budget = db.get_budget(current_user)
     lists_of_items = json.loads(budget[2])
-    return render_template('budget.html', items=lists_of_items)
+
+    item_amounts = [float(x) for x in lists_of_items['amount']]
+    item_category = [int(x) for x in lists_of_items['category']]
+    item_recurring = [int(x) for x in lists_of_items['recurring']]
+    lists_of_items['amount'] = item_amounts
+    lists_of_items['category'] = item_category
+    lists_of_items['recurring'] = item_recurring
+
+    select_lists = {
+        "recurring": recurring,
+        "categories": categories,
+        "cat_labels": category_label
+    }
+    print(lists_of_items)
+    return render_template('budget.html', items=lists_of_items, select_lists=select_lists)
+
+@app.route('/add_to_budget')
+def add_to_budget():
+    budget = db.get_budget(current_user)
+    lists_of_items = json.loads(budget[2])
+
+    item_amount = float(lists_of_items['amount'][-1])
+
+    item_information = {
+        "item": lists_of_items['items'][-1],
+        "amount": item_amount,
+        "dateDue": lists_of_items['dateDue'][-1],
+        "recurring": lists_of_items['recurring'][-1],
+        "category": lists_of_items['category'][-1],
+        "isPaid": lists_of_items['isPaid'][-1],
+        "index": (len(lists_of_items['items'])-1)
+    }
+
+    select_lists = {
+        "recurring": recurring,
+        "categories": categories,
+        "cat_labels": category_label
+    }
+
+    return render_template('components/budget_item.html', item=item_information, select_lists=select_lists)
 
 @app.route('/receive_expense_list', methods=['POST'])
 def receive_expense_list():
-    expenses = request.form.getlist('item_names[]')
+    item_names = request.form.getlist('item_names[]')
     item_amounts = request.form.getlist('item_amounts[]')
+    item_categories = request.form.getlist('item_categories[]')
+    item_dates = request.form.getlist('item_dates[]')
+    item_recurrings = request.form.getlist('item_recurrings[]')
+    item_paid = request.form.getlist('item_paid[]')
 
-    print(expenses)
+    item_amounts = [float(x) for x in item_amounts]
+    item_categories = [int(x) for x in item_categories]
+    item_recurrings = [int(x) for x in item_recurrings]
+
+    lists_of_items = {
+        'items': item_names,
+        'amount': item_amounts,
+        'dateDue': item_dates,
+        'recurring': item_recurrings,
+        'category': item_categories,
+        'isPaid': item_paid
+    }
+
+    db.update_budget(current_user, json.dumps(lists_of_items))
+    print(item_names)
     print(item_amounts)
     return json.dumps({'status': 'Success'})
 
-@app.route('/add_item', methods=['POST'])
-def add_item():
+@app.route('/update_item', methods=['POST'])
+def update_item():
     item_names = request.form.getlist('item_names[]')
     item_amounts = request.form.getlist('item_amounts[]')
+    item_categories = request.form.getlist('item_categories[]')
+    item_dates = request.form.getlist('item_dates[]')
+    item_recurrings = request.form.getlist('item_recurrings[]')
+    item_paid = request.form.getlist('item_paid[]')
 
     item_amounts = [float(x) for x in item_amounts]
-    lists_of_items = {}
-    lists_of_items['items'] = item_names
-    lists_of_items['amount'] = item_amounts
+    item_categories = [int(x) for x in item_categories]
+    item_recurrings = [int(x) for x in item_recurrings]
 
-    db.update_budget(5, json.dumps(lists_of_items))
-    print(session.keys())
-    return redirect('/')
+    lists_of_items = {
+        'items': item_names,
+        'amount': item_amounts,
+        'dateDue': item_dates,
+        'recurring': item_recurrings,
+        'category': item_categories,
+        'isPaid': item_paid
+    }
+
+
+    print(lists_of_items)
+    db.update_budget(current_user, json.dumps(lists_of_items))
+
+    return jsonify(result= 'complete')
+    #return render_template('components/budget_list.html', item=lists_of_items)
 
 
 if __name__ == '__main__':

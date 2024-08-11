@@ -1,0 +1,44 @@
+<ul id="expenses" data-accordion="collapse" class="text-sm font-medium text-gray-900 bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+    {% for item in items['items'] %}
+        <li id="expense" class="w-full ">
+            <div class="grid grid-cols-6 relative justify-items-between w-full px-4 py-4 cursor-pointer dark:hover:bg-gray-600 dark:hover:text-white hover:bg-gray-100 hover:text-blue-700 border-b border-gray-200 dark:border-gray-600">
+                <div class="grid grid-cols-2 col-start-1 justify-self-start">
+                    <input id="selected-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                    <span id="exp-name" class="w-48 justify-start">{{ item }}</span>
+                </div>
+                <div class="grid grid-cols-3 col-end-7 col-span-2 justify-items-end">
+                    <div class="col-span-2">
+                        {% if items['amount'][loop.index - 1] < 0 %}
+                            <span id="exp-amount" data-amount="{{ '%0.2f' % items['amount'][loop.index - 1]|float }}">-$ {{ '%0.2f' % (items['amount'][loop.index - 1]*-1)|float }}</span>
+                        {% else %}
+                            <span id="exp-amount" data-amount="{{ '%0.2f' % items['amount'][loop.index - 1]|float }}">$ {{ '%0.2f' % items['amount'][loop.index - 1]|float }}</span>
+                        {% endif %}
+                    </div>
+                    <span id="exp-cumsum">0</span>
+                    <button id="item-button" type="button" class="h-full w-[30px] absolute bottom-0 right-0 bg-white hover:bg-gray-100 hover:text-blue-700 focus:ring-1 focus:outline-none focus:ring-[#3b5998]/50 font-medium text-sm text-center inline-flex items-center dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600" data-accordion-target="#item-edit-body-{{ (loop.index - 1) }}" aria-expanded="false" aria-controls="item-edit-body-{{ (loop.index - 1) }}">
+                        <svg id="item-image" class="w-[30px] h-[30px] text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m15 19-7-7 7-7"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div id="item-edit-body-{{ (loop.index - 1) }}" class="hidden">
+                <div class="grid grid-cols-2 justify-between p-4 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
+                    <div class="relative z-0 w-full mb-4 px-1 group">
+                        <input datepicker datepicker-autohide type="text" name="item-edit-date" id="item-edit-date" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=""/>
+                        <div class="absolute inset-y-0 end-3 flex items-center ps-3 pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+                            </svg>
+                        </div>
+                        <label for="item-edit-date" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Date</label>
+                    </div>
+                    <div class="relative z-0 w-full mb-4 px-1 group">
+                        <input type="number" name="item-edit-amount" id="item-edit-amount" class="block py-2.5 px-2 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+                        <label for="item-edit-amount" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Amount</label>
+                    </div>
+                </div>
+            </div>
+        </li>
+    {% endfor %}
+</ul>
