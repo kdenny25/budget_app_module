@@ -1,18 +1,18 @@
-<li id="expense" data-paid="False" class="w-full ">
-    <div class="grid grid-cols-6 relative justify-items-between w-full px-4 py-4 cursor-pointer dark:hover:bg-gray-600 dark:hover:text-white hover:bg-gray-100 hover:text-blue-700 border-b border-gray-200 dark:border-gray-600">
+<li id="expense" data-paid="{{ item['isPaid'] }}" class="w-full ">
+    <div id="exp-content" class="grid grid-cols-6 relative justify-items-between w-full px-4 py-4 cursor-pointer dark:hover:bg-gray-600 dark:hover:text-white hover:bg-gray-100 hover:text-blue-700 border-b border-gray-200 dark:border-gray-600">
         <div class="col-span-2 flex gap-5 col-start-1 justify-self-start">
             <input id="selected-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
             <span id="exp-name" class="justify-start">{{ item['item'] }}</span>
         </div>
-        <div class="col-start-3">
+        <div class="col-start-3 col-span-2">
             {% set cat_idx = item['category']|int %}
             <span id="exp-category" data-category="{{ item['category'] }}">{{ select_lists['cat_labels'][cat_idx] }}</span>
         </div>
-        <div class="col-start-4">
+        <div class="col-start-5">
             <span id="exp-date" class="justify-end" data-recurring="{{ item['recurring']}}">{{ item['dateDue'] }}</span>
         </div>
-        <div class="grid grid-cols-3 col-end-7 col-span-2 justify-items-end">
-            <div class="col-span-2">
+        <div class="grid grid-cols-1 col-end-7 col-span-1 justify-items-end">
+            <div class="col-span-3 pr-8">
                 {% if item['amount'] < 0 %}
                     <span id="exp-amount" data-amount="{{ '%0.2f' % item['amount']|float }}">-$ {{ '%0.2f' % (item['amount']*-1)|float }}</span>
                 {% else %}

@@ -2,6 +2,7 @@
 // Scripts to initialize at startup
 $(document).ready(function() {
     calcCumSum()
+    is_paid()
     localStorage.setItem('color-theme', 'light');
 })
 
@@ -12,14 +13,55 @@ $('#paid-items').on('click', function() {
             if($(this).attr('data-paid') === 'False'){
                 $(this).attr('data-paid', 'True')
                 $(this).find('#exp-content').wrap("<strike>")
+                $(this).css('opacity', '0.5')
             }
             else {
                 $(this).attr('data-paid', 'False')
                 $(this).find('#exp-content').unwrap()
+                $(this).css('opacity', '1')
             }
         }
     })
+
+    if($("#select-all-checkbox").is(":checked")){
+        $("#select-all-checkbox").prop('checked', false)
+    }
+
+    update_budget()
 })
+
+$(function () {
+    //Loop through all Labels with class 'editable'.
+    $(".editable").each(function () {
+        //Reference the Label.
+        var label = $(this);
+
+        //Add a TextBox next to the Label.
+        label.after("<input type = 'text' style = 'display:none' />");
+
+        //Reference the TextBox.
+        var textbox = $(this).next();
+
+        //Set the name attribute of the TextBox.
+        textbox[0].name = this.id.replace("lbl", "txt");
+
+        //Assign the value of Label to TextBox.
+        textbox.val(label.html());
+
+        //When Label is clicked, hide Label and show TextBox.
+        label.click(function () {
+            $(this).hide();
+            $(this).next().show();
+        });
+
+        //When focus is lost from TextBox, hide TextBox and show Label.
+        textbox.focusout(function () {
+            $(this).hide();
+            $(this).prev().html($(this).val());
+            $(this).prev().show();
+        });
+    });
+});
 
 // deleting items from budget
 $('#delete-items').on('click', function() {
@@ -28,29 +70,12 @@ $('#delete-items').on('click', function() {
         if($(this).find('#selected-checkbox').is(':checked')){
             $(this).remove()
         }
-
-        if($("#select-all-checkbox").is(":checked")){
-            $("#select-all-checkbox").prop('checked', false)
-        }
     })
+    if($("#select-all-checkbox").is(":checked")){
+        $("#select-all-checkbox").prop('checked', false)
+    }
 
-    console.log(item_names)
-    console.log(item_amounts)
-
-    $.ajax({
-        type: 'POST',
-        url: '/update_item',
-        data: {
-            item_names : item_names,
-            item_amounts : item_amounts
-        },
-        success: function(data) {
-            if (data.result == "complete"){
-
-            }
-        }
-
-    });
+    update_budget()
 })
 
 
@@ -66,6 +91,73 @@ function add_budget(){
             calcCumSum()
             initFlowbite()
         })
+}
+
+function is_paid() {
+    $('#expenses li').each(function (i) {
+        if ($(this).attr('data-paid') === 'True') {
+            $(this).find('#exp-content').wrap("<strike>")
+            $(this).css('opacity', '0.5')
+        }
+    })
+}
+
+function update_budget() {
+    var item_names = new Array()
+    var item_amounts = new Array()
+    var item_categories = new Array()
+    var item_dates = new Array()
+    var item_recurrings = new Array()
+    var item_paid = new Array()
+
+    $('#expenses li #exp-name').each(function (i) {
+        var text = $(this).text();
+        item_names.push(text);
+    });
+
+    $('#expenses li #exp-amount').each(function (i) {
+        var amount = $(this).data('amount')
+        item_amounts.push(amount);
+    })
+
+    $('#expenses li #exp-category').each(function (i) {
+        var category = parseInt($(this).data('category'));
+        item_categories.push(category)
+    })
+
+    $('#expenses li #exp-date').each(function (i) {
+        var date = $(this).text();
+        item_dates.push(date)
+    })
+
+    $('#expenses li #exp-date').each(function (i) {
+        var recurring = parseInt($(this).data('recurring'));
+        item_recurrings.push(recurring);
+    })
+
+    $('#expenses li').each(function (i) {
+        var paid = $(this).data('paid')
+        item_paid.push(paid)
+    })
+
+    console.log(item_paid)
+
+    $.ajax({
+        type: 'POST',
+        url: '/update_item',
+        data: {
+            item_names : item_names,
+            item_amounts : item_amounts,
+            item_categories : item_categories,
+            item_dates : item_dates,
+            item_recurrings : item_recurrings,
+            item_paid : item_paid
+        },
+        success: function(data) {
+            if (data.result == "complete"){
+            }
+        }
+    });
 }
 
 $('#select-all-checkbox').click(function () {
@@ -225,59 +317,8 @@ function calcCumSum(){
 $(document).ready(function() {
     $( "#expenses" ).sortable({
         stop: function (event, ui) {
-            var item_names = new Array()
-            var item_amounts = new Array()
-            var item_categories = new Array()
-            var item_dates = new Array()
-            var item_recurrings = new Array()
-            var item_paid = new Array()
-
-            $('#expenses li #exp-name').each(function (i) {
-                var text = $(this).text();
-                item_names.push(text);
-            });
-
-            $('#expenses li #exp-amount').each(function (i) {
-                var amount = $(this).data('amount')
-                item_amounts.push(amount);
-            })
-
-            $('#expenses li #exp-category').each(function (i) {
-                var category = parseInt($(this).data('category'));
-                item_categories.push(category)
-            })
-
-            $('#expenses li #exp-date').each(function (i) {
-                var date = $(this).text();
-                item_dates.push(date)
-            })
-
-            $('#expenses li #exp-date').each(function (i) {
-                var recurring = parseInt($(this).data('recurring'));
-                item_recurrings.push(recurring);
-            })
-
-            $('#expenses li').each(function (i) {
-                var paid = $(this).data('paid')
-                item_paid.push(paid)
-            })
-
             calcCumSum()
-
-            console.log(expenses)
-            $.ajax({
-                type: 'POST',
-                url: '/receive_expense_list',
-                data: {
-                    item_names : item_names,
-                    item_amounts : item_amounts,
-                    item_categories : item_categories,
-                    item_dates : item_dates,
-                    item_recurrings : item_recurrings,
-                    item_paid : item_paid
-                },
-
-            });
+            update_budget()
         }
     });
 } );

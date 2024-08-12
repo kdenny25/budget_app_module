@@ -27,11 +27,11 @@
     <div id="budget-list">
         <ul id="expenses" data-accordion="collapse" class="text-sm font-medium text-gray-900 bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
             {% for item in items['items'] %}
-                <li id="expense" data-paid="False" class="w-full">
+                <li id="expense" data-paid="{{ items['isPaid'][loop.index - 1] }}" class="w-full">
                     <div id="exp-content" class="grid grid-cols-6 relative justify-items-between w-full px-4 pb-5 pt-3 cursor-pointer dark:hover:bg-gray-600 dark:hover:text-white hover:bg-gray-100 hover:text-blue-700 border-b border-gray-200 dark:border-gray-600">
                         <div class="col-span-2 flex gap-5 col-start-1 justify-self-start">
                             <input id="selected-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                            <span id="exp-name" class="justify-start">{{ item }}</span>
+                            <span id="exp-name" class="editable justify-start">{{ item }}</span>
                         </div>
                         <div class="col-start-3 col-span-2">
                             {% set cat_idx = items['category'][loop.index - 1] %}
@@ -77,9 +77,9 @@
             {% endfor %}
         </ul>
     </div>
-    <ul data-accordion="collapse" class="text-sm font-medium  bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+    <ul data-accordion="collapse" class="text-sm font-medium bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-600 dark:text-white">
         <li id="accordion-collapse" class="w-full">
-            <button type="button" id="add-item" class="justify-center  text-[#EFEFEF] py-2 h-full w-full bg-[#4484CE] hover:bg-gray-100 hover:text-blue-700 focus:ring-1 focus:outline-none font-medium text-sm text-center inline-flex items-center dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white" data-accordion-target="#accordion-collapse-body-1" aria-expanded="false" aria-controls="accordion-collapse-body-1">
+            <button type="button" id="add-item" class="justify-center  text-[#EFEFEF] py-2 h-full w-full bg-[#4484CE] hover:bg-gray-100 hover:text-blue-700 focus:ring-1 focus:outline-none font-medium text-sm text-center inline-flex items-center dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white" data-accordion-target="#accordion-collapse-body-1" aria-expanded="false" aria-controls="accordion-collapse-body-1">
                 <svg class="w-[24px] h-[24px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5"/>
                 </svg>
@@ -97,7 +97,7 @@
                     <label for="item-amount" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Amount</label>
                 </div>
                 <div class="relative z-0 w-full mb-4 px-1 group">
-                    <input datepicker datepicker-autohide type="text" autocomplete="off" name="item-date" id="item-date" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder="" />
+                    <input datepicker datepicker-autohide value="{{ today_date }}" type="text" autocomplete="off" name="item-date" id="item-date" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder="" />
                     <label for="item-date" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Date</label>
                     <div class="absolute inset-y-0 end-3 flex items-center ps-3 pointer-events-none">
                         <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">

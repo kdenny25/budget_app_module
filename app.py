@@ -3,6 +3,7 @@ import json
 from database import Database
 from utilities.lists import recurring, categories, category_label
 from utilities.color_scheme import color_scheme
+from datetime import datetime
 
 db = Database()
 
@@ -14,6 +15,8 @@ current_user = 5
 def index():  # put application's code here
     budget = db.get_budget(current_user)
     lists_of_items = json.loads(budget[2])
+
+    today_date = datetime.today().strftime('%m/%d/%Y')
 
     item_amounts = [float(x) for x in lists_of_items['amount']]
     item_category = [int(x) for x in lists_of_items['category']]
@@ -28,7 +31,7 @@ def index():  # put application's code here
         "cat_labels": category_label
     }
     print(lists_of_items)
-    return render_template('budget.html', items=lists_of_items, select_lists=select_lists, color_scheme=color_scheme)
+    return render_template('budget.html', items=lists_of_items, select_lists=select_lists, color_scheme=color_scheme, today_date=today_date)
 
 @app.route('/add_to_budget')
 def add_to_budget():
@@ -108,8 +111,7 @@ def update_item():
     print(lists_of_items)
     db.update_budget(current_user, json.dumps(lists_of_items))
 
-    return jsonify(result= 'complete')
-    #return render_template('components/budget_list.html', item=lists_of_items)
+    return jsonify(result='complete')
 
 
 if __name__ == '__main__':
