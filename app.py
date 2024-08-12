@@ -2,6 +2,7 @@ from flask import Flask, request, render_template, redirect, session, jsonify
 import json
 from database import Database
 from utilities.lists import recurring, categories, category_label
+from utilities.color_scheme import color_scheme
 
 db = Database()
 
@@ -27,7 +28,7 @@ def index():  # put application's code here
         "cat_labels": category_label
     }
     print(lists_of_items)
-    return render_template('budget.html', items=lists_of_items, select_lists=select_lists)
+    return render_template('budget.html', items=lists_of_items, select_lists=select_lists, color_scheme=color_scheme)
 
 @app.route('/add_to_budget')
 def add_to_budget():

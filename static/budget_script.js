@@ -2,15 +2,30 @@
 // Scripts to initialize at startup
 $(document).ready(function() {
     calcCumSum()
+    localStorage.setItem('color-theme', 'light');
+})
+
+// marked paid
+$('#paid-items').on('click', function() {
+    $('#expenses li').each(function (i) {
+        if($(this).find('#selected-checkbox').is(':checked')){
+            if($(this).attr('data-paid') === 'False'){
+                $(this).attr('data-paid', 'True')
+                $(this).find('#exp-content').wrap("<strike>")
+            }
+            else {
+                $(this).attr('data-paid', 'False')
+                $(this).find('#exp-content').unwrap()
+            }
+        }
+    })
 })
 
 // deleting items from budget
 $('#delete-items').on('click', function() {
-    var item_names = new Array()
-    var item_amounts = new Array()
 
     $('#expenses li').each(function (i) {
-        if(($(this).find('#selected-checkbox').is(':checked'))){
+        if($(this).find('#selected-checkbox').is(':checked')){
             $(this).remove()
         }
 
