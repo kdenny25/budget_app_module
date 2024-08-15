@@ -58,32 +58,63 @@ def add_to_budget():
 
     return render_template('components/budget_item.html', item=item_information, select_lists=select_lists)
 
-@app.route('/receive_expense_list', methods=['POST'])
-def receive_expense_list():
-    item_names = request.form.getlist('item_names[]')
-    item_amounts = request.form.getlist('item_amounts[]')
-    item_categories = request.form.getlist('item_categories[]')
-    item_dates = request.form.getlist('item_dates[]')
-    item_recurrings = request.form.getlist('item_recurrings[]')
-    item_paid = request.form.getlist('item_paid[]')
+@app.route('/get_full_budget')
+def get_full_budget():
+    budget = db.get_budget(current_user)
+    lists_of_items = json.loads(budget[2])
 
-    item_amounts = [float(x) for x in item_amounts]
-    item_categories = [int(x) for x in item_categories]
-    item_recurrings = [int(x) for x in item_recurrings]
+    full_template = ""
 
-    lists_of_items = {
-        'items': item_names,
-        'amount': item_amounts,
-        'dateDue': item_dates,
-        'recurring': item_recurrings,
-        'category': item_categories,
-        'isPaid': item_paid
-    }
+    for i in range(len(lists_of_items['items'])):
+        item_amount = float(lists_of_items['amount'][i])
 
-    db.update_budget(current_user, json.dumps(lists_of_items))
-    print(item_names)
-    print(item_amounts)
-    return json.dumps({'status': 'Success'})
+        item_information = {
+            "item": lists_of_items['items'][i],
+            "amount": item_amount,
+            "dateDue": lists_of_items['dateDue'][i],
+            "recurring": lists_of_items['recurring'][i],
+            "category": lists_of_items['category'][i],
+            "isPaid": lists_of_items['isPaid'][i],
+            "index": i
+        }
+
+        select_lists = {
+            "recurring": recurring,
+            "categories": categories,
+            "cat_labels": category_label
+        }
+
+        full_template += ''.join(render_template('components/budget_item.html', item=item_information, select_lists=select_lists))
+
+    return full_template
+
+
+# @app.route('/receive_expense_list', methods=['POST'])
+# def receive_expense_list():
+#     item_names = request.form.getlist('item_names[]')
+#     item_amounts = request.form.getlist('item_amounts[]')
+#     item_categories = request.form.getlist('item_categories[]')
+#     item_dates = request.form.getlist('item_dates[]')
+#     item_recurrings = request.form.getlist('item_recurrings[]')
+#     item_paid = request.form.getlist('item_paid[]')
+#
+#     item_amounts = [float(x) for x in item_amounts]
+#     item_categories = [int(x) for x in item_categories]
+#     item_recurrings = [int(x) for x in item_recurrings]
+#
+#     lists_of_items = {
+#         'items': item_names,
+#         'amount': item_amounts,
+#         'dateDue': item_dates,
+#         'recurring': item_recurrings,
+#         'category': item_categories,
+#         'isPaid': item_paid
+#     }
+#
+#     db.update_budget(current_user, json.dumps(lists_of_items))
+#     print(item_names)
+#     print(item_amounts)
+#     return json.dumps({'status': 'Success'})
 
 @app.route('/update_item', methods=['POST'])
 def update_item():
