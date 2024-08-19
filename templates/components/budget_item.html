@@ -1,13 +1,12 @@
 <li id="expense" data-paid="{{ item['isPaid'] }}" class="w-full ">
-    <div id="exp-content" class="grid grid-cols-6 relative justify-items-between w-full px-4 py-4 cursor-pointer dark:hover:bg-gray-600 dark:hover:text-white hover:bg-gray-100 hover:text-blue-700 border-b border-gray-200 dark:border-gray-600">
-        <div class="col-span-2 flex gap-5 col-start-1 justify-self-start">
+    <div id="exp-content" class="grid grid-cols-6 relative justify-items-between w-full px-4 pt-0 pb-6 cursor-pointer dark:hover:bg-gray-600 dark:hover:text-white hover:bg-gray-100 hover:text-black border-b border-gray-200 dark:border-gray-600">
+        <div class="col-span-2 flex items-center gap-5 col-start-1 justify-self-start">
             <input id="selected-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-            <input id="exp-name" type="text" class="justify-start h-9 w-full mr-1 text-black outline-none border border-transparent bg-transparent text-sm focus:ring-blue-500 focus:bg-gray-100 focus:ring-0 dark:bg-transparent dark:border-transparent dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" value="{{ item['item'] }}"/>
+            <input id="exp-name" type="text" class="justify-start h-9 w-full mr-1 text-black outline-none border border-transparent bg-transparent text-sm focus:ring-blue-500 focus:bg-gray-100 focus:ring-0 dark:bg-transparent dark:border-transparent dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" value="{{ item['item'] }}"/>
         </div>
         <div class="col-start-3 col-span-2 pr-4">
             {% set cat_idx = item['category']|int %}
-{#            <span id="exp-category" data-category="{{ item['category'] }}">{{ select_lists['cat_labels'][cat_idx] }}</span>#}
-            <select id="exp-category" name="exp-category" style="background:none" class="block  h-9 w-full text-black outline-none border border-transparent bg-transparent text-sm focus:ring-blue-500 focus:bg-gray-100 focus:ring-0 dark:bg-transparent dark:border-transparent dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            <select id="exp-category" name="exp-category" style="background:none" class="block h-9 w-full text-black outline-none border border-transparent bg-transparent text-sm focus:ring-blue-500 focus:bg-gray-100 focus:ring-0 dark:bg-transparent dark:border-transparent dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                 {% for category in select_lists['categories'].keys() %}
                     {% if category == select_lists['cat_labels'][cat_idx] %}
                         <option selected value="{{ select_lists['categories'][category] }}">{{ category }}</option>
@@ -18,41 +17,53 @@
             </select>
         </div>
         <div class="inline-flex col-start-5">
-            <div class="flex h-7 items-center">
-                <svg class="w-4 h-4 text-gray-800 dark:text-white" viewBox="0 0 24 24" aria-label="Recurring item" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <div class="flex h-9 items-center">
+                <svg  class="w-4 h-4 text-gray-800 dark:text-gray-400" viewBox="0 0 24 24" aria-label="Recurring item" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    {% set recurring_idx = item['recurring']|int %}
                     {% if item['recurring'] > 1 %}
-                        <path d="M11.5 20.5C6.80558 20.5 3 16.6944 3 12C3 7.30558 6.80558 3.5 11.5 3.5C16.1944 3.5 20 7.30558 20 12C20 13.5433 19.5887 14.9905 18.8698 16.238M22.5 15L18.8698 16.238M17.1747 12.3832L18.5289 16.3542L18.8698 16.238" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <title>Recurring {{ select_lists['rec_labels'][recurring_idx] }}</title>
+                        <path d="M11.5 20.5C6.80558 20.5 3 16.6944 3 12C3 7.30558 6.80558 3.5 11.5 3.5C16.1944 3.5 20 7.30558 20 12C20 13.5433 19.5887 14.9905 18.8698 16.238M22.5 15L18.8698 16.238M17.1747 12.3832L18.5289 16.3542L18.8698 16.238" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     {% endif %}
                 </svg>
             </div>
-            <input datepicker datepicker-autohide name="exp-date" type="text" id="exp-date-{{ item['index'] }}" class="h-9 w-full mr-1 text-black outline-none border border-transparent bg-transparent text-sm focus:ring-blue-500 focus:bg-gray-100 focus:ring-0 dark:bg-transparent dark:border-transparent dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" data-recurring="{{ item['recurring']}}" value="{{ item['dateDue'] }}"/>
+            <input datepicker datepicker-autohide name="exp-date" type="text" id="exp-date-{{ item['index'] }}" class="h-9 w-full mr-1 text-black outline-none border border-transparent bg-transparent text-sm focus:ring-blue-500 focus:bg-gray-100 focus:ring-0 dark:bg-transparent dark:border-transparent dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" data-recurring="{{ item['recurring']}}" value="{{ item['dateDue'] }}"/>
         </div>
         <div class="grid grid-cols-1 col-end-7 col-span-1 justify-items-end">
-            <div class="col-span-3 pr-8">
+            <div class="inline-flex items-center col-span-3 pr-8 text-black dark:text-gray-400">
                 {% if item['amount'] < 0 %}
-                    <span id="exp-amount" data-amount="{{ '%0.2f' % item['amount']|float }}">-$ {{ '%0.2f' % (item['amount']*-1)|float }}</span>
+                    <span>-$</span>
                 {% else %}
-                    <span id="exp-amount" data-amount="{{ '%0.2f' % item['amount']|float }}">$ {{ '%0.2f' % item['amount']|float }}</span>
+                    <span>$</span>
                 {% endif %}
+                <input type="number" id="exp-amount" name="exp-amount-{{ item['index'] }}" onchange="updateAmount(this.name)" data-amount="{{ '%0.2f' % item['amount']|float }}" value="{{ '%0.2f' % item['amount']|abs|float }}" class="justify-start h-9 w-full mr-1 text-black outline-none border border-transparent bg-transparent text-sm focus:ring-blue-500 focus:bg-gray-100 focus:ring-0 dark:bg-transparent dark:border-transparent dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 [&::-webkit-inner-spin-button]:appearance-none"/>
                 <span id="exp-cumsum">0</span>
             </div>
-            <button id="item-button" type="button" class="h-full w-[30px] absolute bottom-0 right-0 bg-white hover:bg-gray-100 hover:text-blue-700 focus:ring-1 focus:outline-none focus:ring-[#3b5998]/50 font-medium text-sm text-center inline-flex items-center dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600" data-accordion-target="#item-edit-body-{{ item['index'] }}" aria-expanded="false" aria-controls="item-edit-body-{{ item['index'] }}">
-                <svg id="item-image" class="w-[30px] h-[30px] text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m15 19-7-7 7-7"/>
+            <div class="h-full w-[30px] absolute bottom-0 right-0 bg-transparent inline-flex items-center dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600" aria-expanded="false">
+                <?xml version="1.0" encoding="utf-8"?><!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+                <svg fill="currentColor" width="800px" height="800px" viewBox="0 0 256 256" id="Flat" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M104,196.0001a12,12,0,1,1-12-12A12,12,0,0,1,104,196.0001Zm-12-80a12,12,0,1,0,12,12A12,12,0,0,0,92,116.0001Zm72-44a12,12,0,1,0-12-12A12,12,0,0,0,164,72.0001Zm0,44a12,12,0,1,0,12,12A12,12,0,0,0,164,116.0001Zm-72-68a12,12,0,1,0,12,12A12,12,0,0,0,92,48.0001Zm72,136a12,12,0,1,0,12,12A12,12,0,0,0,164,184.0001Z"/>
                 </svg>
-            </button>
+            </div>
         </div>
+        <button id="item-button" type="button" class="grid justify-items-center justify-self-center w-56 rounded-t-md absolute bottom-0 bg-white hover:{{ color_scheme['light']['bg'] }} hover:text-white focus:ring-1 focus:outline-none focus:ring-[#3b5998]/50 font-medium text-sm text-center inline-flex items-center dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-800" data-accordion-target="#item-edit-body-{{ item['index'] }}" aria-expanded="false" aria-controls="item-edit-body-{{ item['index'] }}">
+            <svg class="w-6 h-6 text-current" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/>
+            </svg>
+        </button>
     </div>
     <div id="item-edit-body-{{ item['index'] }}" class="hidden">
         <div class="grid grid-cols-2 justify-between p-4 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
             <div class="relative z-0 w-full mb-4 px-1 group">
-                <input datepicker datepicker-autohide type="text" name="item-edit-date" id="item-edit-date" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=""/>
-                <div class="absolute inset-y-0 end-3 flex items-center ps-3 pointer-events-none">
-                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-                    </svg>
-                </div>
-                <label for="item-edit-date" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Date</label>
+                <label for="item-recurring" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Recurring</label>
+                <select id="item-recurring" name="item-recurring" class="block py-2.5 px-1 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
+                    {% for recurring in select_lists['recurring'].keys() %}
+                        {% if recurring == select_lists['rec_labels'][recurring_idx] %}
+                            <option selected value="{{ select_lists['recurring'][recurring] }}">{{ recurring }}</option>
+                        {% else %}
+                            <option value="{{ select_lists['recurring'][recurring] }}">{{ recurring }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
             </div>
             <div class="relative z-0 w-full mb-4 px-1 group">
                 <input type="number" name="item-edit-amount" id="item-edit-amount" class="block py-2.5 px-2 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />

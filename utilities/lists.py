@@ -6,7 +6,18 @@ recurring = {
     "Monthly": 5,
     "Bi-Monthly": 6,
     "Quarterly": 7,
-    "Annually": 6,
+    "Annually": 8,
+}
+
+recurring_labels = {
+    1: "Once",
+    2: "Daily",
+    3: "Weekly",
+    4: "Bi-Weekly",
+    5: "Monthly",
+    6: "Bi-Monthly",
+    7: "Quarterly",
+    8: "Annually"
 }
 
 categories = {

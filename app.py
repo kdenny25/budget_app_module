@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, redirect, session, jsonify
 import json
 from database import Database
-from utilities.lists import recurring, categories, category_label
+from utilities.lists import recurring, categories, category_label, recurring_labels
 from utilities.color_scheme import color_scheme
 from datetime import datetime
 
@@ -27,6 +27,7 @@ def index():  # put application's code here
 
     select_lists = {
         "recurring": recurring,
+        "rec_labels": recurring_labels,
         "categories": categories,
         "cat_labels": category_label
     }
@@ -80,11 +81,12 @@ def get_full_budget():
 
         select_lists = {
             "recurring": recurring,
+            "rec_labels": recurring_labels,
             "categories": categories,
             "cat_labels": category_label
         }
 
-        full_template += ''.join(render_template('components/budget_item.html', item=item_information, select_lists=select_lists))
+        full_template += ''.join(render_template('components/budget_item.html', item=item_information, color_scheme=color_scheme, select_lists=select_lists))
 
     return full_template
 

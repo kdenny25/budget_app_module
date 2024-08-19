@@ -3,7 +3,23 @@
 $(document).ready(function() {
     get_full_budget()
     localStorage.setItem('color-theme', 'light');
+    saveBudget()
 })
+
+function saveBudget(){
+    setTimeout(
+    function () {
+        $('#isSaved').text('( Saving... )')
+            update_budget()
+        setTimeout(
+        function() {
+            $('#isSaved').text('( Saved )')
+        },
+        1000
+        );
+    }, 15000);
+
+}
 
 // marked paid
 $('#paid-items').on('click', function() {
@@ -61,7 +77,7 @@ function get_full_budget() {
                 return response.text();
             })
             .then(html => {
-                $('#expenses').append(html)
+                $('#expenses').hide().css('opacity',0.0).append(html).slideDown('slow').animate({opacity: 1.0})
                 calcCumSum()
                 is_paid()
                 initFlowbite()
@@ -77,12 +93,13 @@ function add_budget(){
             return response.text();
         })
         .then(html => {
-            $('#expenses').append(html)
+            $('#expenses').append(html).slideDown('slow')
             calcCumSum()
             initFlowbite()
-
         })
 }
+
+
 
 function is_paid() {
     $('#expenses li').each(function (i) {
@@ -131,7 +148,7 @@ function update_budget() {
         item_paid.push(paid)
     })
 
-    console.log(item_paid)
+    console.log("Budget Saved")
 
     $.ajax({
         type: 'POST',
@@ -316,3 +333,17 @@ $(document).ready(function() {
         }
     });
 } );
+
+
+// updated data value in budget amount
+function updateAmount(object) {
+    selector = document.getElementsByName(object)
+    console.log($(selector).data('amount'))
+    if($(selector).data('amount') < 0){
+        $(selector).data('amount', parseFloat($(selector).val()*-1))
+    } else {
+        $(selector).data('amount', parseFloat($(selector).val()))
+    }
+    calcCumSum()
+    console.log($(selector).data('amount'))
+}
