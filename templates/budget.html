@@ -98,6 +98,8 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="{{ url_for('static', filename='jquery.pulsate.js') }}"></script>
 <script src="{{ url_for('static', filename='budget_script.js') }}"></script>
 <script src="{{ url_for('static', filename='color_mode.js') }}"></script>
+
 {% endblock %}

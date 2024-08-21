@@ -12,6 +12,25 @@
         <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
         <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.js"></script>
     </head>
+    <style>
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .pulse {
+            animation: pulse 1s 1;
+        }
+    </style>
     <body class="bg-[#EFEFEF] dark:bg-gray-900">
         <div class="flex justify-center pt-10">
             {% block content %}{% endblock %}

@@ -3,7 +3,6 @@
 $(document).ready(function() {
     get_full_budget()
     localStorage.setItem('color-theme', 'light');
-    saveBudget()
 })
 
 function saveBudget(){
@@ -17,7 +16,7 @@ function saveBudget(){
         },
         1000
         );
-    }, 15000);
+    }, 5000);
 
 }
 
@@ -51,7 +50,7 @@ $('#paid-items').on('click', function() {
         $("#select-all-checkbox").prop('checked', false)
     }
 
-    update_budget()
+    saveBudget()
 })
 
 // deleting items from budget
@@ -66,7 +65,7 @@ $('#delete-items').on('click', function() {
         $("#select-all-checkbox").prop('checked', false)
     }
 
-    update_budget()
+    saveBudget()
 })
 
 function get_full_budget() {
@@ -85,17 +84,29 @@ function get_full_budget() {
             })
 }
 
-function add_budget(){
-    fetch("/add_to_budget", {
+function add_budget(pos=-1){
+    var url = "/add_to_budget/" + pos
+    fetch(url, {
         method: "GET"
     })
         .then(response => {
             return response.text();
         })
         .then(html => {
-            $('#expenses').append(html).slideDown('slow')
-            calcCumSum()
-            initFlowbite()
+            if (pos == -1) {
+                var newItem = $(html)
+                $('#expenses').append(newItem)
+                newItem.addClass("pulse")
+                calcCumSum()
+                initFlowbite()
+            } else {
+                console.log("Adding item")
+                var newItem = $(html)
+                $('#expenses li').eq(parseInt(pos)).append(newItem)
+                newItem.addClass("pulse")
+                calcCumSum()
+                initFlowbite()
+            }
         })
 }
 
@@ -120,6 +131,7 @@ function update_budget() {
     var item_dates = new Array()
     var item_recurrings = new Array()
     var item_paid = new Array()
+    var item_id = new Array()
 
     $('#expenses li #exp-name').each(function (i) {
         var text = $(this).val();
@@ -148,12 +160,18 @@ function update_budget() {
         item_paid.push(paid)
     })
 
+    $('#expenses li').each(function (i) {
+        var id = $(this).data('itemid')
+        item_id.push(id)
+    })
+
     console.log("Budget Saved")
 
     $.ajax({
         type: 'POST',
         url: '/update_item',
         data: {
+            item_ids : item_id,
             item_names : item_names,
             item_amounts : item_amounts,
             item_categories : item_categories,
@@ -179,6 +197,7 @@ $('#add-expense').on('click', function() {
     var item_dates = new Array()
     var item_recurrings = new Array()
     var item_paid = new Array()
+    var item_id = new Array()
 
     $('#expenses li #exp-name').each(function (i) {
         var text = $(this).val();
@@ -205,6 +224,11 @@ $('#add-expense').on('click', function() {
     $('#expenses li').each(function (i) {
         var paid = $(this).data('paid')
         item_paid.push(paid)
+    })
+
+    $('#expenses li').each(function (i) {
+        var id = $(this).data('itemid')
+        item_id.push(id)
     })
 
     item_names.push($("#item-name").val())
@@ -218,12 +242,13 @@ $('#add-expense').on('click', function() {
     $("#item-amount").val('')
     $("#item-category").prop('selectedIndex', 0)
 
-    console.log(item_amounts)
-    console.log(item_categories)
+    console.log(item_id)
+    console.log(item_recurrings)
     $.ajax({
         type: 'POST',
         url: '/update_item',
         data: {
+            item_ids : item_id,
             item_names : item_names,
             item_amounts : item_amounts,
             item_categories : item_categories,
@@ -234,6 +259,14 @@ $('#add-expense').on('click', function() {
         success: function(data) {
             if (data.result == "complete"){
                 add_budget()
+            } else if (data.result == "refresh") {
+                $.each(data.poslist, function(index, value) {
+                    var wait = index * 1000 + 1000;
+                    setTimeout(function() {
+                        add_budget(value)
+                    }, wait)
+                })
+
             }
         }
     });
@@ -246,6 +279,7 @@ $('#add-income').on('click', function() {
     var item_dates = new Array()
     var item_recurrings = new Array()
     var item_paid = new Array()
+    var item_id = new Array()
 
     $('#expenses li #exp-name').each(function (i) {
         var text = $(this).val();
@@ -272,6 +306,11 @@ $('#add-income').on('click', function() {
     $('#expenses li').each(function (i) {
         var paid = $(this).data('paid')
         item_paid.push(paid)
+    })
+
+    $('#expenses li').each(function (i) {
+        var id = $(this).data('itemid')
+        item_id.push(id)
     })
 
     item_names.push($("#item-name").val())
@@ -289,6 +328,7 @@ $('#add-income').on('click', function() {
         type: 'POST',
         url: '/update_item',
         data: {
+            item_ids : item_id,
             item_names : item_names,
             item_amounts : item_amounts,
             item_categories : item_categories,
@@ -299,6 +339,14 @@ $('#add-income').on('click', function() {
         success: function(data) {
             if (data.result == "complete"){
                 add_budget()
+            } else if (data.result == "refresh") {
+                $.each(data.poslist, function(index, value) {
+                    var wait = index * 1000 + 1000;
+                    setTimeout(function() {
+                        add_budget(value)
+                    }, wait)
+                })
+
             }
         }
     });
@@ -329,7 +377,7 @@ $(document).ready(function() {
     $( "#expenses" ).sortable({
         stop: function (event, ui) {
             calcCumSum()
-            update_budget()
+            saveBudget()
         }
     });
 } );
