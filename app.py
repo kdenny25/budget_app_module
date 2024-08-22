@@ -121,11 +121,18 @@ def update_item():
         'category': item_categories,
         'isPaid': item_paid
     }
+    print(lists_of_items)
 
     result = "complete"
+
+    # checks if new item added
     # if fewer item id's exist than item_names then a new item was added
     if len(item_ids) == 0 and len(item_names) == 1:
         lists_of_items['item_id'] = [1]
+
+        if item_recurrings[0] > 1:
+            lists_of_items, pos_list = add_recurring_items(lists_of_items)
+            result = "refresh"
     elif len(item_ids) < len(item_names):
         new_id = (list(set(item_ids))[-1]) + 1
         lists_of_items['item_id'].append(new_id)
@@ -134,7 +141,7 @@ def update_item():
             lists_of_items, pos_list = add_recurring_items(lists_of_items)
             result = "refresh"
 
-    print(lists_of_items)
+
     db.update_budget(current_user, json.dumps(lists_of_items))
 
     return jsonify(result=result, poslist=pos_list)

@@ -1,13 +1,15 @@
 recurring = {
     "Never": 1,
     "Weekly": 2,
-    "Monthly": 3,
+    "Bi-Weekly": 3,
+    "Monthly": 4,
 }
 
 recurring_labels = {
     1: "Never",
     2: "Weekly",
-    3: "Monthly",
+    3: "Bi-Weekly",
+    4: "Monthly",
 }
 
 categories = {

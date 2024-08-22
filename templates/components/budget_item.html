@@ -1,12 +1,12 @@
-<li id="expense" data-itemid="{{ item['item_id'] }}" data-paid="{{ item['isPaid'] }}" class="w-full bg-white">
-    <div id="exp-content" class="grid grid-cols-6 relative justify-items-between w-full px-4 pt-0 pb-4 cursor-pointer dark:hover:bg-gray-600 dark:hover:text-white hover:bg-gray-100 hover:text-black border-b border-gray-200 dark:border-gray-600">
+<li id="expense" data-itemid="{{ item['item_id'] }}" data-paid="{{ item['isPaid'] }}" class="w-full bg-white dark:bg-gray-700">
+    <div id="exp-content" class="grid grid-cols-6 relative justify-items-between w-full px-4 pt-0 pb-4 cursor-pointer dark:hover:bg-gray-600 hover:bg-gray-100 border-b border-gray-200 dark:border-gray-600">
         <div class="col-span-2 flex items-center gap-5 col-start-1 justify-self-start">
             <input id="selected-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-            <input id="exp-name" type="text" class="justify-start h-7 w-full mr-1 text-black outline-none border border-transparent bg-transparent text-sm focus:ring-blue-500 focus:bg-gray-100 focus:ring-0 dark:bg-transparent dark:border-transparent dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" value="{{ item['item'] }}"/>
+            <input id="exp-name" type="text" class="justify-start h-7 w-full mr-1 text-current outline-none border border-transparent bg-transparent text-sm focus:ring-blue-500 focus:bg-gray-100 focus:ring-0 dark:bg-transparent dark:border-transparent dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" value="{{ item['item'] }}"/>
         </div>
         <div class="col-start-3 col-span-2 pr-4">
             {% set cat_idx = item['category']|int %}
-            <select id="exp-category" name="exp-category" style="background:none" class="block h-7 px-2 py-0 w-full text-black outline-none border border-transparent bg-transparent text-sm focus:ring-blue-500 focus:bg-gray-100 focus:ring-0 dark:bg-transparent dark:border-transparent dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            <select id="exp-category" name="exp-category" style="background:none" class="block h-7 px-2 py-0 w-full text-current outline-none border border-transparent bg-transparent text-sm focus:ring-blue-500 focus:bg-gray-100 focus:ring-0 dark:bg-transparent dark:border-transparent dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                 {% for category in select_lists['categories'].keys() %}
                     {% if category == select_lists['cat_labels'][cat_idx] %}
                         <option selected value="{{ select_lists['categories'][category] }}">{{ category }}</option>
@@ -18,7 +18,7 @@
         </div>
         <div class="inline-flex col-start-5">
             <div class="flex h-9 items-center">
-                <svg  class="w-4 h-4 text-gray-800 dark:text-gray-400" viewBox="0 0 24 24" aria-label="Recurring item" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg  class="w-3 h-3 mt-0 text-current" viewBox="0 0 24 24" aria-label="Recurring item" fill="none" xmlns="http://www.w3.org/2000/svg">
                     {% set recurring_idx = item['recurring']|int %}
                     {% if item['recurring'] > 1 %}
                         <title>Recurring {{ select_lists['rec_labels'][recurring_idx] }}</title>
@@ -26,26 +26,25 @@
                     {% endif %}
                 </svg>
             </div>
-            <input datepicker datepicker-autohide name="exp-date" type="text" id="exp-date-{{ item['index'] }}" class="h-7 w-full mr-1 text-black outline-none border border-transparent bg-transparent text-sm focus:ring-blue-500 focus:bg-gray-100 focus:ring-0 dark:bg-transparent dark:border-transparent dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" data-recurring="{{ item['recurring']}}" value="{{ item['dateDue'] }}"/>
+            <input datepicker datepicker-autohide name="exp-date" type="text" id="exp-date-{{ item['index'] }}" class="h-7 w-full mr-1 text-current outline-none border border-transparent bg-transparent text-sm focus:ring-blue-500 focus:bg-gray-100 focus:ring-0 dark:bg-transparent dark:border-transparent dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" data-recurring="{{ item['recurring']}}" value="{{ item['dateDue'] }}"/>
         </div>
         <div class="grid grid-cols-1 col-end-7 col-span-1 justify-items-end">
-            <div class="inline-flex items-center col-span-3 pr-8 text-black dark:text-gray-400">
+            <div class="inline-flex items-center col-span-3 pr-8 text-current">
                 {% if item['amount'] < 0 %}
                     <span>-$</span>
                 {% else %}
                     <span>$</span>
                 {% endif %}
-                <input type="number" id="exp-amount" name="exp-amount-{{ item['index'] }}" onchange="updateAmount(this.name)" data-amount="{{ '%0.2f' % item['amount']|float }}" value="{{ '%0.2f' % item['amount']|abs|float }}" class="justify-start h-7 w-full mr-1 text-black outline-none border border-transparent bg-transparent text-sm focus:ring-blue-500 focus:bg-gray-100 focus:ring-0 dark:bg-transparent dark:border-transparent dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 [&::-webkit-inner-spin-button]:appearance-none"/>
+                <input type="number" id="exp-amount" name="exp-amount-{{ item['index'] }}" onchange="updateAmount(this.name)" data-amount="{{ '%0.2f' % item['amount']|float }}" value="{{ '%0.2f' % item['amount']|abs|float }}" class="justify-start h-7 w-full mr-1 text-current outline-none border border-transparent bg-transparent text-sm focus:ring-blue-500 focus:bg-gray-100 focus:ring-0 dark:bg-transparent dark:border-transparent dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 [&::-webkit-inner-spin-button]:appearance-none"/>
                 <span id="exp-cumsum">0</span>
             </div>
-            <div name="drag-icon" class="h-full w-[30px] absolute bottom-0 right-0 bg-transparent inline-flex items-center dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600" aria-expanded="false">
-                <?xml version="1.0" encoding="utf-8"?><!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
-                <svg fill="currentColor" width="800px" height="800px" viewBox="0 0 256 256" id="Flat" xmlns="http://www.w3.org/2000/svg">
+            <div id="drag-icon" class="h-full w-[30px] absolute bottom-0 right-0 bg-transparent text-black inline-flex items-center dark:text-gray-400">
+                <svg fill="currentColor" width="30" height="30" viewBox="0 0 256 256" id="Flat" xmlns="http://www.w3.org/2000/svg">
                     <path d="M104,196.0001a12,12,0,1,1-12-12A12,12,0,0,1,104,196.0001Zm-12-80a12,12,0,1,0,12,12A12,12,0,0,0,92,116.0001Zm72-44a12,12,0,1,0-12-12A12,12,0,0,0,164,72.0001Zm0,44a12,12,0,1,0,12,12A12,12,0,0,0,164,116.0001Zm-72-68a12,12,0,1,0,12,12A12,12,0,0,0,92,48.0001Zm72,136a12,12,0,1,0,12,12A12,12,0,0,0,164,184.0001Z"/>
                 </svg>
             </div>
         </div>
-        <button id="item-button" type="button" class="grid justify-items-center justify-self-center w-56 rounded-t-md absolute bottom-0 bg-white hover:{{ color_scheme['light']['bg'] }} hover:text-white focus:ring-1 focus:outline-none focus:ring-[#3b5998]/50 font-medium text-sm text-center inline-flex items-center dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-800" data-accordion-target="#item-edit-body-{{ item['index'] }}" aria-expanded="false" aria-controls="item-edit-body-{{ item['index'] }}">
+        <button id="item-button" type="button" class="grid justify-items-center justify-self-center w-56 rounded-t-md absolute bottom-0 bg-white hover:{{ color_scheme['light']['bg'] }} text-black hover:text-white focus:ring-1 focus:outline-none focus:ring-[#3b5998]/50 font-medium text-sm text-center inline-flex items-center dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-800" data-accordion-target="#item-edit-body-{{ item['index'] }}" aria-expanded="false" aria-controls="item-edit-body-{{ item['index'] }}">
             <svg class="w-6 h-6 text-current" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/>
             </svg>

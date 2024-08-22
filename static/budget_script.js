@@ -79,6 +79,7 @@ function get_full_budget() {
                 $('#expenses').hide().css('opacity',0.0).append(html).slideDown('slow').animate({opacity: 1.0})
                 calcCumSum()
                 is_paid()
+                applyTypeColor()
                 initFlowbite()
                 $( "#expenses" ).sortable( "refresh" );
             })
@@ -93,24 +94,31 @@ function add_budget(pos=-1){
             return response.text();
         })
         .then(html => {
-            if (pos == -1) {
+            console.log($('#expenses li').length)
+            if ((pos == -1) || ($('#expenses li').length == 0)) {
                 var newItem = $(html)
                 $('#expenses').append(newItem)
                 newItem.addClass("pulse")
                 calcCumSum()
                 initFlowbite()
             } else {
-                console.log("Adding item")
+                console.log("Adding item at: " + String(pos))
                 var newItem = $(html)
-                $('#expenses li').eq(parseInt(pos)).append(newItem)
-                newItem.addClass("pulse")
-                calcCumSum()
-                initFlowbite()
+                if(pos == $('#expenses li').length){
+                    $('#expenses').append(newItem)
+                        newItem.addClass("pulse")
+                        calcCumSum()
+                        initFlowbite()
+                } else {
+                    $('#expenses li').eq(parseInt(pos)).before(newItem)
+                    newItem.addClass("pulse")
+                    calcCumSum()
+                    applyTypeColor()
+                    initFlowbite()
+                }
             }
         })
 }
-
-
 
 function is_paid() {
     $('#expenses li').each(function (i) {
@@ -261,7 +269,7 @@ $('#add-expense').on('click', function() {
                 add_budget()
             } else if (data.result == "refresh") {
                 $.each(data.poslist, function(index, value) {
-                    var wait = index * 1000 + 1000;
+                    var wait = index * 250 + 250;
                     setTimeout(function() {
                         add_budget(value)
                     }, wait)
@@ -341,7 +349,7 @@ $('#add-income').on('click', function() {
                 add_budget()
             } else if (data.result == "refresh") {
                 $.each(data.poslist, function(index, value) {
-                    var wait = index * 1000 + 1000;
+                    var wait = index * 250 + 250;
                     setTimeout(function() {
                         add_budget(value)
                     }, wait)
@@ -368,6 +376,18 @@ function calcCumSum(){
             $('#exp-cumsum', this).removeClass()
             $('#exp-cumsum', this).addClass("absolute bottom-0 right-10 bg-green-100 text-green-800 text-xxs font-light px-1 py-0.25 rounded dark:bg-green-900 dark:text-green-300")
             $('#exp-cumsum', this).text("$ " + prevAmt.toFixed(2))
+        }
+    })
+}
+
+function applyTypeColor() {
+    $('#expenses li').each(function () {
+        var amount = parseFloat($('#exp-amount', this).data('amount'));
+
+        if(amount < 0) {
+            $(this).addClass('text-[#9d0208] dark:text-[#e5383b]')
+        } else {
+            $(this).addClass('text-[#2a850e] dark:text-[#60d394]')
         }
     })
 }
