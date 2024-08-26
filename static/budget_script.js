@@ -3,6 +3,7 @@
 $(document).ready(function() {
     get_full_budget()
     localStorage.setItem('color-theme', 'light');
+
 })
 
 function saveBudget(){
@@ -18,6 +19,12 @@ function saveBudget(){
         );
     }, 5000);
 
+}
+
+function setPosition() {
+    $('#expenses li').each(function(i) {
+        $(this).attr('data-pos', i)
+    })
 }
 
 // marked paid
@@ -68,6 +75,53 @@ $('#delete-items').on('click', function() {
     saveBudget()
 })
 
+function alert_message(message){
+    $('#alert-1-message').text(message)
+    $('#alert-1').fadeIn()
+    setTimeout(function(){
+        $('#alert-1').fadeOut()
+    }, 5000)
+}
+
+function delete_item_modal_button(current){
+    var position = current.closest('li[data-pos]').dataset.pos
+    var itemId = current.closest('li[data-pos]').dataset.itemid
+    var recurring = current.closest('li[data-pos]').dataset.recurring
+
+    if (recurring > 1){
+        $('#apply-recurring-container').removeClass('hidden')
+    } else {
+        $('#apply-recurring-container').addClass('hidden')
+    }
+    $('#delete-item').attr('data-position', position)
+    $('#delete-item').attr('data-itemid', itemId)
+}
+
+function delete_item(current){
+    var position = current.dataset.position
+    var itemId = current.dataset.itemid
+    var recurring = $('#apply-recurring').prop('checked')
+    var num_deleted = 0
+    console.log(recurring)
+
+    if (recurring){
+        $('#apply-recurring').prop('checked', false)
+        $('#expenses li[data-itemid="' + itemId + '"]').each(function() {
+            if(parseInt(this.dataset.pos) >= parseInt(position)){
+                this.remove()
+                num_deleted += 1
+            }
+        })
+    } else {
+        $('#expenses li[data-pos="' + position + '"]').remove()
+        num_deleted += 1
+    }
+    alert_message((num_deleted + " item(s) removed from budget."))
+    calcCumSum()
+    setPosition()
+    update_budget()
+}
+
 function get_full_budget() {
     fetch("/get_full_budget", {
             method: "GET"
@@ -79,6 +133,7 @@ function get_full_budget() {
                 $('#expenses').hide().css('opacity',0.0).append(html).slideDown('slow').animate({opacity: 1.0})
                 calcCumSum()
                 is_paid()
+                setPosition()
                 applyTypeColor()
                 initFlowbite()
                 $( "#expenses" ).sortable( "refresh" );
